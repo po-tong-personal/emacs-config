@@ -69,4 +69,21 @@
   (add-to-list 'company-backends 'company-tern)
   )
 
+(use-package markdown-mode
+  :ensure t
+  :commands (markdown-mode gfm-mode)
+  :mode (("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  ;; :init (setq markdown-command "multimarkdown")
+  )
+
+(use-package flymd
+  :ensure t
+  :after markdown-mode
+  :config
+  (defun my-flymd-browser-function (url)
+    (let ((browse-url-browser-function 'browse-url-firefox))
+      (browse-url url)))
+  (setq flymd-browser-open-function 'my-flymd-browser-function)
+  )
 ;;; init-000-core-base.el ends here

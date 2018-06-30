@@ -43,7 +43,7 @@
 
 ;; Customize the modeline
 (use-package spaceline-config
-  :after spaceline
-  :config (spaceline-emacs-theme))
+  :ensure spaceline
+  :config (spaceline-spacemacs-theme))
 
 ;;; init-000-core-base.el ends here

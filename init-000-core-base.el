@@ -46,4 +46,27 @@
   :ensure spaceline
   :config (spaceline-spacemacs-theme))
 
+;; JavaScript setup start here
+(use-package js2-mode
+  :ensure t
+  :mode "\\.js\\'")
+
+(use-package js2-refactor-mode
+  :after js2-mode
+  :ensure js2-refactor
+  :hook js2-mode
+  :bind (("C-k" . js2r-kill))
+  :init (js2r-add-keybindings-with-prefix "C-c C-r"))
+
+(use-package company-tern
+  :after js2-mode
+  :ensure t
+  :init
+  (add-hook 'js2-mode-hook (lambda ()
+			     (tern-mode)
+			     (company-mode)))
+  :config
+  (add-to-list 'company-backends 'company-tern)
+  )
+
 ;;; init-000-core-base.el ends here

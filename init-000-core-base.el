@@ -36,6 +36,10 @@
  kept-old-versions 2
  version-control t)       ; use versioned backups
 
+;; For :diminish
+(use-package diminish
+  :ensure t)
+
 ;; Load custom theme - Spacemacs-dark
 (use-package spacemacs-common
   :ensure spacemacs-theme
@@ -46,7 +50,28 @@
   :ensure spaceline
   :config (spaceline-spacemacs-theme))
 
-;; JavaScript setup start here
+;; Ivy mode
+(use-package ivy
+  :ensure t
+  :diminish ivy-mode
+  :config
+  (ivy-mode 1))
+
+;; Magit
+(use-package magit
+  :ensure t
+  :bind ("C-x g" . magit-status))
+
+(use-package smartparens-config
+    :ensure smartparens
+    :config
+    (progn
+      (show-smartparens-global-mode t)))
+
+(add-hook 'prog-mode-hook 'turn-on-smartparens-strict-mode)
+(add-hook 'markdown-mode-hook 'turn-on-smartparens-strict-mode)
+
+;; JavaScript setup starts here
 (use-package js2-mode
   :ensure t
   :mode "\\.js\\'")
@@ -66,9 +91,9 @@
 			     (tern-mode)
 			     (company-mode)))
   :config
-  (add-to-list 'company-backends 'company-tern)
-  )
+  (add-to-list 'company-backends 'company-tern))
 
+;; Maerkdown setup starts here
 (use-package markdown-mode
   :ensure t
   :commands (markdown-mode gfm-mode)
@@ -84,6 +109,16 @@
   (defun my-flymd-browser-function (url)
     (let ((browse-url-browser-function 'browse-url-firefox))
       (browse-url url)))
-  (setq flymd-browser-open-function 'my-flymd-browser-function)
-  )
+  (setq flymd-browser-open-function 'my-flymd-browser-function))
+
+;; golang setup starts here
+(use-package go-mode
+  :ensure t
+  :mode "\\.go\\'")
+
+;; php setup starts here
+(use-package php-mode
+  :ensure t
+  :mode "\\.php\\'")
+
 ;;; init-000-core-base.el ends here

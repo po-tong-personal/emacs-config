@@ -57,6 +57,13 @@
   :config
   (ivy-mode 1))
 
+;; Flycheck
+(use-package flycheck
+  :ensure t
+  :diminish flycheck-mode
+  :init
+  (global-flycheck-mode t))
+
 ;; Magit
 (use-package magit
   :ensure t
@@ -120,5 +127,13 @@
 (use-package php-mode
   :ensure t
   :mode "\\.php\\'")
+
+(use-package company-php
+  :ensure t
+  :after php-mode
+  :init
+  (add-hook 'php-mode-hook 'company-mode)
+  :config
+  (add-to-list 'company-backends 'company-ac-php-backend))
 
 ;;; init-000-core-base.el ends here

@@ -40,6 +40,10 @@
 (use-package diminish
   :ensure t)
 
+;; For :delight
+(use-package delight
+  :ensure t)
+
 ;; Load custom theme - Spacemacs-dark
 (use-package spacemacs-common
   :ensure spacemacs-theme
@@ -49,6 +53,37 @@
 (use-package spaceline-config
   :ensure spaceline
   :config (spaceline-spacemacs-theme))
+
+;; Projectile setup
+(use-package projectile
+  :ensure t
+  :delight '(:eval (concat " " (projectile-project-name)))
+  :bind-keymap
+  ("C-c p" . projectile-command-map)
+  :config
+  (projectile-mode 1))
+
+;; Tree directory using neotree
+(use-package neotree
+  :ensure t
+  :bind (("C-c o" . neotree-toggle)
+         :map neotree-mode-map
+         ("e" . neotree-enter-hide))
+  :init
+  (setq neo-show-hidden-files t)
+  (setq neo-create-file-auto-open t)
+  (setq neo-keymap-style 'concise)
+  (setq neo-smart-open t)
+  (setq neo-vc-integration '(face))
+  (defun neo-open-file-hide (full-path &optional arg)
+    "Open a file node and hides tree."
+    (neo-global--select-mru-window arg)
+    (find-file full-path)
+    (neotree-hide))
+  (defun neotree-enter-hide (&optional arg)
+    "Enters file and hides neotree directly"
+    (interactive "P")
+    (neo-buffer--execute arg 'neo-open-file-hide 'neo-open-dir)))
 
 ;; Ivy mode
 (use-package ivy
@@ -67,10 +102,12 @@
 ;; Magit
 (use-package magit
   :ensure t
+  :diminish auto-revert-mode
   :bind ("C-x g" . magit-status))
 
 (use-package smartparens-config
-    :ensure smartparens
+  :ensure smartparens
+  :diminish smartparens-mode
     :config
     (progn
       (show-smartparens-global-mode t)))
@@ -81,17 +118,22 @@
 ;; JavaScript setup starts here
 (use-package js2-mode
   :ensure t
-  :mode "\\.js\\'")
+  :diminish (js2-refactor-mode yas-minor-mode)
+  :mode "\\.js\\'"
+  :init
+  (add-hook 'js2-mode-hook (lambda()
+							 (setq js-switch-indent-offset 4))))
 
 (use-package js2-refactor-mode
   :after js2-mode
   :ensure js2-refactor
   :hook js2-mode
-  :bind (("C-k" . js2r-kill))
+  ;; :bind (("C-k" . js2r-kill))
   :init (js2r-add-keybindings-with-prefix "C-c C-r"))
 
 (use-package company-tern
   :after js2-mode
+  :diminish (tern-mode company-mode)
   :ensure t
   :init
   (add-hook 'js2-mode-hook (lambda ()
@@ -99,6 +141,11 @@
 			     (company-mode)))
   :config
   (add-to-list 'company-backends 'company-tern))
+
+;; JSON setup starts here
+(use-package json-mode
+  :ensure t
+  :mode "\\.json\\'")
 
 ;; Maerkdown setup starts here
 (use-package markdown-mode
@@ -126,11 +173,18 @@
 ;; php setup starts here
 (use-package php-mode
   :ensure t
-  :mode "\\.php\\'")
+  :diminish (abbrev-mode)
+  :mode "\\.php\\'"
+  :init
+  (add-hook 'php-mode-hook (lambda()
+							 (setq tab-width 4
+								   indent-tabs-mode t))))
+
 
 (use-package company-php
   :ensure t
   :after php-mode
+  :diminish company-mode
   :init
   (add-hook 'php-mode-hook 'company-mode)
   :config

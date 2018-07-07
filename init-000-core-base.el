@@ -8,7 +8,7 @@
 
 ;; Keywords: emacs, use-package, configuration
 
-;;; Commentary
+;;; Commentary:
 
 ;;; Code:
 (require 'use-package)
@@ -54,6 +54,13 @@
   :ensure spaceline
   :config (spaceline-spacemacs-theme))
 
+;; Ivy mode
+(use-package ivy
+  :ensure t
+  :diminish ivy-mode
+  :config
+  (ivy-mode 1))
+
 ;; Projectile setup
 (use-package projectile
   :ensure t
@@ -61,7 +68,22 @@
   :bind-keymap
   ("C-c p" . projectile-command-map)
   :config
-  (projectile-mode 1))
+  (projectile-mode 1)
+  (setq projectile-completion-system 'ivy))
+
+;; ivy UI for projectile
+(use-package counsel-projectile
+  :ensure t
+  :config
+  (counsel-projectile-mode))
+
+;; silver search
+(use-package ag
+  :ensure t
+  :config
+  (setq ag-highlight-search t)
+  (setq ag-reuse-buffers t)
+  (add-to-list 'ag-arguments "--word-regexp"))
 
 ;; Tree directory using neotree
 (use-package neotree
@@ -85,12 +107,6 @@
     (interactive "P")
     (neo-buffer--execute arg 'neo-open-file-hide 'neo-open-dir)))
 
-;; Ivy mode
-(use-package ivy
-  :ensure t
-  :diminish ivy-mode
-  :config
-  (ivy-mode 1))
 
 ;; Flycheck
 (use-package flycheck
@@ -179,7 +195,6 @@
   (add-hook 'php-mode-hook (lambda()
 							 (setq tab-width 4
 								   indent-tabs-mode t))))
-
 
 (use-package company-php
   :ensure t

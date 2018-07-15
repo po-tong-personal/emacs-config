@@ -108,6 +108,12 @@
     (neo-buffer--execute arg 'neo-open-file-hide 'neo-open-dir)))
 
 
+(use-package company
+  :ensure t
+  :init
+  (global-company-mode)
+  :bind (("<backtab>" . company-complete-common-or-cycle)))
+
 ;; Flycheck
 (use-package flycheck
   :ensure t
@@ -121,15 +127,20 @@
   :diminish auto-revert-mode
   :bind ("C-x g" . magit-status))
 
-(use-package smartparens-config
-  :ensure smartparens
-  :diminish smartparens-mode
-    :config
-    (progn
-      (show-smartparens-global-mode t)))
+;; (use-package smartparens-config
+;;   :ensure smartparens
+;;   :diminish smartparens-mode
+;;     :config
+;;     (progn
+;;       (show-smartparens-global-mode t)))
 
-(add-hook 'prog-mode-hook 'turn-on-smartparens-strict-mode)
-(add-hook 'markdown-mode-hook 'turn-on-smartparens-strict-mode)
+;; (add-hook 'prog-mode-hook 'turn-on-smartparens-strict-mode)
+;; (add-hook 'markdown-mode-hook 'turn-on-smartparens-strict-mode)
+
+;; cmake setup starts here
+(use-package cmake-mode
+  :ensure t
+  :mode "\\CMakeLists.txt\\'")
 
 ;; JavaScript setup starts here
 (use-package js2-mode
@@ -169,7 +180,7 @@
   :commands (markdown-mode gfm-mode)
   :mode (("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
-  ;; :init (setq markdown-command "multimarkdown")
+  :init (setq markdown-command "pandoc")
   )
 
 (use-package flymd
@@ -193,16 +204,72 @@
   :mode "\\.php\\'"
   :init
   (add-hook 'php-mode-hook (lambda()
-							 (setq tab-width 4
-								   indent-tabs-mode t))))
+			     (setq tab-width 4
+				   indent-tabs-mode t))))
 
 (use-package company-php
   :ensure t
   :after php-mode
-  :diminish company-mode
+  ;; :diminish company-mode
   :init
   (add-hook 'php-mode-hook 'company-mode)
   :config
   (add-to-list 'company-backends 'company-ac-php-backend))
+
+;; c++ setup starts here
+(use-package irony
+  :ensure t
+  :config
+  (use-package company-irony
+    :ensure t
+    ;; :diminish (company-mode irony-mode)
+    :config
+    (add-to-list 'company-backends 'company-irony)
+    ;; (add-hook 'c++-mode-hook 'company-irony-mode)
+    ;; (add-hook 'c-mode-hook 'company-irony-mode)
+    ;; (add-hook 'objc-mode-hook 'company-irony-mode)
+    )
+
+  (use-package company-irony-c-headers
+    :ensure t
+    :config
+    (add-to-list 'company-backends 'company-irony-c-headers))
+
+  (add-hook 'c++-mode-hook 'irony-mode)
+  (add-hook 'c-mode-hook 'irony-mode)
+  (add-hook 'objc-mode-hook 'irony-mode)
+  (setq-default irony-cdb-compilation-databases '(irony-cdb-libclang
+                                                    irony-cdb-clang-complete))
+  ;; replace the `completion-at-point' and `complete-symbol' bindings in
+  ;; irony-mode's buffers by irony-mode's function
+  (defun my-irony-mode-hook ()
+    (define-key irony-mode-map [remap completion-at-point]
+      'irony-completion-at-point-async)
+    (define-key irony-mode-map [remap complete-symbol]
+      'irony-completion-at-point-async))
+  (add-hook 'irony-mode-hook 'my-irony-mode-hook)
+  (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
+
+  ;; (use-package flycheck-irony
+  ;;   :ensure t
+  ;;   :commands flycheck-irony-setup
+  ;;   :init
+  ;;   (defun my-c++-flycheck-hook ()
+  ;;     (setq flycheck-clang-include-path (list "/home/potong/heros_v_monsters/include")))
+  ;;   (add-hook 'c++-mode-hook 'flycheck-irony-setup)
+  ;;   (add-hook 'c-mode-hook 'flycheck-irony-setup)
+  ;;   ;;(add-hook 'c++-mode-hook 'my-c++-flycheck-hook)
+  ;;   )
+  (use-package cmake-ide
+    :ensure t
+    :init
+    (use-package semantic/bovine/gcc)
+    (setq cmake-ide-flags-c++ (append '("-std=c++11")
+  				      (mapcar (lambda (path) (concat "-I" path)) (semantic-gcc-get-include-paths "c++"))))
+    (setq cmake-ide-flags-c (append (mapcar (lambda (path) (concat "-I" path)) (semantic-gcc-get-include-paths "c"))))
+    (cmake-ide-setup))
+  )
+
+
 
 ;;; init-000-core-base.el ends here

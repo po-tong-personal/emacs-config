@@ -44,10 +44,15 @@
 (use-package delight
   :ensure t)
 
-;; Load custom theme - Spacemacs-dark
-(use-package spacemacs-common
-  :ensure spacemacs-theme
-  :config (load-theme 'spacemacs-dark t))
+;; ;; Load custom theme - Spacemacs-dark
+;; (use-package spacemacs-common
+;;   :ensure spacemacs-theme
+;;   :config (load-theme 'spacemacs-dark t))
+
+;; Load custom theme - cyberpunk
+(use-package cyberpunk-theme
+  :ensure t
+  :config (load-theme 'cyberpunk t))
 
 ;; Customize the modeline
 (use-package spaceline-config
@@ -161,7 +166,11 @@
 ;; JSON setup starts here
 (use-package json-mode
   :ensure t
-  :mode "\\.json\\'")
+  :mode "\\.json\\'"
+  :init
+  (add-hook 'json-mode-hook (lambda()
+							 (setq tab-width 4
+								   indent-tabs-mode t))))
 
 ;; Maerkdown setup starts here
 (use-package markdown-mode
@@ -190,7 +199,7 @@
 (use-package php-mode
   :ensure t
   :diminish (abbrev-mode)
-  :mode "\\.php\\'"
+  :mode (("\\.php\\'" . php-mode)("\\.ctp\\'" . php-mode))
   :init
   (add-hook 'php-mode-hook (lambda()
 							 (setq tab-width 4
@@ -204,5 +213,14 @@
   (add-hook 'php-mode-hook 'company-mode)
   :config
   (add-to-list 'company-backends 'company-ac-php-backend))
+
+(use-package ruby-mode
+  :ensure t
+  :mode "\\.rb\\'"
+  :mode "Rakefile\\'")
+
+(use-package yaml-mode
+  :ensure t
+  :mode "\\.yml\\'")
 
 ;;; init-000-core-base.el ends here

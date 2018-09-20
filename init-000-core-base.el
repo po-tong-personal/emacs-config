@@ -36,6 +36,12 @@
  kept-old-versions 2
  version-control t)       ; use versioned backups
 
+;; some keybinds
+(global-set-key (kbd "C-c <left>")  'windmove-left)
+(global-set-key (kbd "C-c <right>") 'windmove-right)
+(global-set-key (kbd "C-c <up>")    'windmove-up)
+(global-set-key (kbd "C-c <down>")  'windmove-down)
+
 ;; For :diminish
 (use-package diminish
   :ensure t)
@@ -118,7 +124,9 @@
   :ensure t
   :diminish flycheck-mode
   :init
-  (global-flycheck-mode t))
+  (global-flycheck-mode t)
+  (add-hook 'flycheck-mode-hook (lambda() (setq-local flycheck-javascript-eslint-executable "/home/po/node_modules/eslint/bin/eslint.js")))
+  )
 
 ;; Magit
 (use-package magit
@@ -143,7 +151,9 @@
   :mode "\\.js\\'"
   :init
   (add-hook 'js2-mode-hook (lambda()
-							 (setq js-switch-indent-offset 4))))
+			     (setq tab-width 4
+				   indent-tabs-mode t)
+			     )))
 
 (use-package js2-refactor-mode
   :after js2-mode
@@ -167,6 +177,7 @@
 (use-package json-mode
   :ensure t
   :mode "\\.json\\'"
+  :mode ".eslintrc\\'"
   :init
   (add-hook 'json-mode-hook (lambda()
 							 (setq tab-width 4

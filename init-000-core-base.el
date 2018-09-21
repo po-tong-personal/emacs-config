@@ -131,6 +131,12 @@
 (add-hook 'prog-mode-hook 'turn-on-smartparens-strict-mode)
 (add-hook 'markdown-mode-hook 'turn-on-smartparens-strict-mode)
 
+;; Org mode starts here
+(use-package org
+  :ensure t
+  :mode ("\\.org\\'" . org-mode)
+  )
+
 ;; JavaScript setup starts here
 (use-package js2-mode
   :ensure t
@@ -184,7 +190,32 @@
 ;; golang setup starts here
 (use-package go-mode
   :ensure t
-  :mode "\\.go\\'")
+  :mode "\\.go\\'"
+  :config
+  (add-to-list 'exec-path "/home/po/go/bin")
+  (defun my-go-mode-hook ()
+    ;; Use goimports instead of go-fmt
+    (setq gofmt-command "goimports")
+    ;; Call Gofmt before saving
+    (add-hook 'before-save-hook 'gofmt-before-save)
+    ;; Godef jump key binding
+    (local-set-key (kbd "M-.") 'godef-jump)
+    (local-set-key (kbd "M-*") 'pop-tag-mark)
+    (setq tab-width 4
+	  indent-tabs-mode t)
+    )
+  (defun auto-complete-for-go ()
+    (auto-complete-mode t))
+  (add-hook 'go-mode-hook 'my-go-mode-hook)
+  (add-hook 'go-mode-hook 'auto-complete-for-go)
+  (with-eval-after-load 'go-mode
+    (require 'go-autocomplete))
+  )
+
+;; web mode here
+(use-package web-mode
+  :ensure t
+  :mode "\\.gotmpl\\'")
 
 ;; php setup starts here
 (use-package php-mode
@@ -204,5 +235,15 @@
   (add-hook 'php-mode-hook 'company-mode)
   :config
   (add-to-list 'company-backends 'company-ac-php-backend))
+
+
+;; python starts here
+(use-package python-mode
+  :ensure t
+  :mode "\\.py\\'")
+
+;; GodotScript starts here
+(use-package godot-mode
+  :mode "\\.gd\\'")
 
 ;;; init-000-core-base.el ends here

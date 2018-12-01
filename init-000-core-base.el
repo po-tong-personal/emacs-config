@@ -184,7 +184,30 @@
 ;; golang setup starts here
 (use-package go-mode
   :ensure t
-  :mode "\\.go\\'")
+  :mode "\\.go\\'"
+  :init
+  (add-to-list 'exec-path "/home/po/go/bin")
+  (add-to-list 'load-path "~/.emacs.d/lisp/")
+  (require 'go-guru)
+  (defun my-go-mode-hook ()
+    ;; use goimports instead of go-fmt
+    (setq gofmt-command "goimports")
+    ;; Call gofmt before saving
+    (add-hook 'before-save-hook 'gofmt-before-save)
+    ;; customize compile command to run go build
+    (if (not (string-match "go" compile-command))
+	(set (make-local-variable 'compile-command)
+	     "go build -v && go test -v && go vet"))
+    ;; godef jump key binding
+    (local-set-key (kbd "M-.") 'godef-jump)
+    (local-set-key (kbd "M-*") 'pop-tag-mark))
+  (defun auto-complete-for-go ()
+    (auto-complete-mode 1))
+  (add-hook 'go-mode-hook 'my-go-mode-hook)
+  (add-hook 'go-mode-hook 'auto-complete-for-go)
+  (with-eval-after-load 'go-mode
+    (require 'go-autocomplete))
+  (go-guru-hl-identifier-mode))
 
 ;; php setup starts here
 (use-package php-mode
